@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>JSX学习</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  </head>
+
+  <body>
+    <!-- 只能有一个根元素-->
+    <div id="root"></div>
+    <script type="text/babel">
+      // 函数式组件 大写开头
+      function MyComponet() {
+        // babel编译后会开启严格模式，而严格模式会禁用this指向window对象，所以此处是undifined
+        console.log(this);
+        return <h2>函数式组件 大写开头</h2>;
+      }
+
+      // 类组件
+      class MyClassComponet extends React.Component {
+        // 如果数据没有状态，暂时可以不写构造器
+        constructor(props) {
+          super(props);
+          // 状态的初始化 可以多个
+          this.state = { isHot: true };
+          // ==> bind()会返回一个新函数，第一个参数为原函数执行时的this指向
+          // 这样写之后，会在实例对象上多出一个handleClick()方法，用的时候，不会再到原型对象上找
+          this.handleClick = this.handleClick.bind(this);
+        }
+        // render方法在MyClassComponet原型对象上，render方法比较特殊，是实例对象调用的，所以this没有丢失。
+        render() {
+          const { isHot } = this.state;
+          return (
+            // 注意: 1.仅写方法名称  2.此处仅仅是将函数这个特殊属性赋值给了react中的某一属性，作为onClick的事件回调函数。然后进行了直接调用，不是由实例对象调用的
+            // 那么如何让该函数被实例对象调用呢？==>> 用bind基于该函数创建一个新函数(绑定有this指向)，onClick的事件回调函数用这个新函数
+            <h2 onClick={this.handleClick}>
+              类组件大写开头, 今天天气{isHot ? "很热" : "很凉"}
+            </h2>
+          );
+        }
+
+        // 所有类中的方法默认局部开启了严格模式，this都是undifined
+        handleClick() {
+          console.log("点击事件发生!!! 开始更改组件状态!");
+          // 不能直接修改状态 要通过setState()这个API，这个方法在React.Component上, 且修改状态是对状态对象的合并动作!
+          // this.state.isHot = !(this.state.isHot);
+          let currentIsHot = this.state.isHot;
+          this.setState({ isHot: !currentIsHot });
+        }
+      }
+
+      // 数据
+      let data = [{ name: "马瑜" }, { name: "马云飞" }, { name: "周小胖" }];
+
+      // 创建虚拟DOM
+      // JSX允许把标签放到JS中。而大括号会让你回到JS中，这样可以嵌入一些变量
+      // {}只允许是js表达式
+      const VDOM = (
+        <div>
+          <h1>数据列表</h1>
+          <ul>
+            {data.map((item, index) => {
+              return <li key={index}> {item.name} </li>;
+            })}
+          </ul>
+        </div>
+      );
+
+      // 渲染虚拟DOM到页面
+      ReactDOM.render(VDOM, document.getElementById("root"));
+
+      // 注意用组件时 是用的标签形式
+      // react会解析组件标签，并调用该函数
+      ReactDOM.render(<MyComponet />, document.getElementById("root"));
+
+      // 类的实例也是react创建的，并通过该实例调用render方法，将render返回的虚拟dom转为真实dom
+      ReactDOM.render(<MyClassComponet />, document.getElementById("root"));
+    </script>
+  </body>
+</html>

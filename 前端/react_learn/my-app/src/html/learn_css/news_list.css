@@ -1,0 +1,80 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.news {
+  width: 400px;
+  height: 200px;
+  background-color: #ead4ba;
+
+  margin: 50px auto;
+}
+.news .head {
+  height: 40px;
+  background-color: #eee;
+  border: 1px solid #dbdee1;
+}
+
+.news .head a {
+  /* a是行内元素，需要改为块，才能设置宽高 */
+  display: block;
+  width: 50px;
+  height: 40px;
+
+  background-color: #fff;
+  border-top: 3px solid #ff8400;
+  border-right: 1px solid #dbdee1;
+
+  /* 让元素整体向父容器外移动 */
+  margin-top: -1px;
+
+  text-align: center;
+  /* 行高？要比盒子高度小一点 */
+  line-height: 38px;
+
+  font-size: 16px;
+  color: #333;
+}
+
+.news .list {
+  padding: 5px;
+  padding-left: 0px;
+}
+
+/* 给每个li设置背景图 不平铺重复 靠左侧水平给0，垂直居中 */
+.news .list li {
+  background-image: url(../../../public/svg/square_small.svg);
+  background-repeat: no-repeat;
+  background-position: 0px center;
+
+  /* 拉开背景 与 其他内容的距离 */
+  padding-left: 20px;
+}
+
+/* 给每个li中的a设置背景图 不平铺重复 靠左侧水平给0，垂直居中 */
+.news .list li a {
+  background-image: url(../../../public/svg/image_small.svg);
+  background-repeat: no-repeat;
+  background-position: 0px center;
+
+  padding-left: 30px;
+  font-size: 15px;
+  color: #666;
+  /* 行高 拉开垂直方向上 两个a的距离 */
+  line-height: 25px;
+}
+
+/* 鼠标悬停时 改变a中的文字颜色 */
+.news .list li a:hover {
+  color: #ff8400;
+}

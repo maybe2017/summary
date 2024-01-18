@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>JSX学习</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      class MyClassComponet extends React.Component {
+        // 定义状态
+        state = { showProfile: false };
+
+        render() {
+          return (
+            <div>
+              {/* ref回调函数: currentNode是箭头函数的参数，由react调用传入, 将实例中的userNameInput属性赋值为当前节点 */}
+              {/* ref后的值，支持内连函数写法(更新行为会被调用2次)，也支持 绑定到类上的函数 */}
+              <div>
+                <input
+                  onBlur={this.handleSubmit()}
+                  type="text"
+                  placeholder="请输入用户姓名"
+                />
+              </div>
+            </div>
+          );
+        }
+
+        // 如果事件的发生与处理都是相同的节点，可以不用ref={this.saveUserNameInput}
+        saveUserNameInput = (currentNode) => {
+          this.userNameInput = currentNode;
+        };
+
+        // 因为事件对象，它被自动传递给事件处理函数,
+        handleSubmit = (userNameInputEvent) => {
+          // 事件对象e的 target 属性始终是事件刚刚发生的元素的引用
+          const userNameInput = userNameInputEvent.target;
+          alert(userNameInput.value);
+        };
+      }
+      ReactDOM.render(<MyClassComponet />, document.getElementById("root"));
+    </script>
+  </body>
+</html>

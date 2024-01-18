@@ -1,0 +1,56 @@
+/* 盒子尺寸：内容宽高 + border乘2 + padding乘2 */
+/* 外边距margin：不算盒子尺寸中，作用为拉开两个盒子的距离 */
+/* 上下两个盒子的margin会合并：垂直间距取较大的值 */
+/* 父子容器场景下，子容器设置margin-top会导致父元素塌陷问题，达不到想要的效果 ==>> 
+解决: 父容器设置padding规避；或父元素overflow: hidden、或设置border-top，目的是让浏览器正确找到父容器的位置 */
+
+* {
+  padding: 0px;
+  margin: 0px;
+  /* 内减模式 border与padding从div宽高中自己扣除 */
+  box-sizing: border-box;
+}
+/* 去掉列表的小圆点 */
+li {
+  list-style: none;
+}
+
+.avatar {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+}
+
+.div {
+  width: 200px;
+  height: 200px;
+  background: rgb(153, 132, 192);
+
+  /* 缩写bd 线solid dashed */
+  border: 1px dashed #000;
+  border-top: 3px solid red;
+  border-left: 3px solid #1136ed;
+
+  padding-top: 50px;
+  padding-left: 50px;
+  padding: 10px 20px 40px 80px;
+  margin-left: 50px;
+  margin-bottom: 20px;
+
+  text-align: center;
+  overflow: hidden;
+
+  border-radius: 10px 20px 40px 80px;
+}
+
+.div2 {
+  width: 200px;
+  height: 80px;
+  background: orange;
+  padding: 10px 20px 40px 80px;
+
+  /* 版心居中: 整个div在父容器中居中 */
+  /* 两个值: 上下0，左右水平自动 */
+  margin: 0 auto;
+  box-shadow: 2px 5px 10px 1px rgba(0, 0, 0, 0.5);
+}

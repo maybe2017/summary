@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>JSX学习</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      class MyClassComponet extends React.Component {
+
+        // 创建了一个容器  用于存储被ref标识的节点，坑的是，只能存一个key为current的节点
+        // 用多个就要创建多个
+        MyRef = React.createRef();
+
+        render() {
+          return (
+            <div>
+              <input
+                ref={this.MyRef}
+                type="text"
+                placeholder="请输入用户姓名"
+              />
+              <button onClick={this.handleSubmit}>点击提交</button>
+            </div>
+          );
+        }
+        handleSubmit = () => {
+          const userNameInput = this.MyRef.current;
+          alert(userNameInput.value);
+        };
+      }
+
+      ReactDOM.render(<MyClassComponet />, document.getElementById("root"));
+    </script>
+  </body>
+</html>

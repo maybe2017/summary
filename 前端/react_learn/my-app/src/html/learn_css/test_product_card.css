@@ -1,0 +1,32 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+.product {
+  width: 270px;
+  height: 250px;
+  background-color: #f1f1f1;
+  border-radius: 20px;
+
+  margin: 50px auto;
+  padding-top: 50px;
+  padding-left: 30px;
+  padding-right: 30px;
+
+  text-align: center;
+}
+
+.product h3 {
+  font-weight: 400;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  color: #333;
+}
+.product p {
+  font-size: 15px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  color: #555;
+}

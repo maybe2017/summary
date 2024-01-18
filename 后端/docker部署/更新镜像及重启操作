@@ -1,0 +1,21 @@
+## 代码部署目录
+10.40.7.58 
+/home/sas-multi/data-acccess-api
+## 进入部署目录，可重新打镜像
+docker build -t data-access-api:1.0 .
+## 删除之前的容器
+docker rm -f containerId
+## 重新创建容器并运行
+docker run -itd -p 28899:28899 -v /home/sas-multi/data-access-api/temp:/home/temp data-access-api:1.0
+# 查看日志
+docker logs -f --tail 200 containerId
+# 进入容器
+docker exec -itd containerId /bin/bash
+
+
+如何容器内服务访问宿主机服务？
+## 1. 直接使用宿主机ip端口进行访问
+## 2. 构建容器网络 用容器名称访问
+--network fhl_default
+
+

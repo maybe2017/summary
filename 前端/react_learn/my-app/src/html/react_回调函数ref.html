@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>JSX学习</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      // import PersonProfile from "./component/PersonProfile.jsx";
+
+      const personData = [
+        { name: "马瑜", age: 30 },
+        { name: "周小胖", age: 26 },
+      ];
+
+      function PersonProfile({ personList }) {
+        return (
+          <div>
+            <ol>
+              {personList.map((item, index) => {
+                return (
+                  <li key={index}>
+                    姓名:{item.name}, 年龄:{item.age}
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+        );
+      }
+
+      // 1. 字符串形式的ref，在标签中 增加ref属性，可以使react标识这个dom节点（会放入组件实例对象的refs属性中）
+      // 2. 回调函数形式的ref，ref={(currentNode)=>{...}}，箭头函数是一个回调函数[内连形式]，由react调用，调用的时候会传入当前dom节点作为参数 (可以实现将实例中的某一属性赋值为当前节点)
+      // 第二种内连函数形式的ref，在状态state更新，render渲染时，该回调函数会被调用两次，一般也不会影响什么，但是可以用`函数定义在class类中`方式解决
+
+      // 3. 在组件类中定义 MyRef = React.createRef()，它创建了一个容器，用于存储被ref标识的dom节点，坑的是，只能存一个key为current的节点，用多个就要创建多个
+      // 标签里面: ref={this.MyRef}，回调函数中使用: const userNameInput = this.MyRef.current
+
+      // 4. 尽量避免乱用ref
+      // 如果发生事件的dom节点正好是需要操作的dom节点时，就不需要用ref，直接绑定事件回调函数，回调中会被传 event事件对象，通过事件对象就可以获取到dom节点。
+
+      // 现用现取(现在输入标签上加ref，利用ref回调将当前标签绑定到this实例上；最后使用的时候，在this实例上取标签里的值)，叫非受控组件
+      // form表单提交时，会默认进行跳转，提交函数中用event.preventDefault()来阻止表单提交，提交数据用ajax等其他方式。
+
+      // 将输入内容维护到react中的state里面，叫受控组件，【建议这样用，可避免使用ref】
+      // 给每个输入标签的onChange事件绑定一个回调函数，回调逻辑里面将每个用户输入内容写入state状态对象里面；最后使用的时候又从state里面读取（双向绑定，就相当于VUE中的v-model）
+
+      // 表单里面有多个输入标签，怎么解决每一个标签里的onChange事件都要绑定一个回调函数的问题呢？
+      // 两种解决方法:
+      // 1. 函数的柯里化: 函数的返回值是另一个函数
+      // 虽然绑定的都是一个同名回调函数，但是这个函数根据参数的不同，返回了不同的函数；其实真正的给react的回调是返回的函数!
+      // saveFormData(inputType) {
+      //   return (event) {
+      //     console.log(inputType, event.target.value);
+      //     this.setState({[inputType]:event.target.value});
+      //   }
+      // }
+      // 2. 内连函数写法: onChange={(event)=>{this.saveFormData('userName'), event.target.value}}
+      // 第2种写法event由react调用时候传入，saveFormData函数中就可以直接写入 state就行了
+      class MyClassComponet extends React.Component {
+        state = { showProfile: false };
+
+        render() {
+          return (
+            <div>
+              <div>
+                <input
+                  ref={this.saveUserNameInput}
+                  onBlur={this.handleSubmit}
+                  type="text"
+                  placeholder="请输入用户姓名"
+                />
+              </div>
+
+              <div>
+                <input
+                  type="button"
+                  onClick={this.handleChangeShowProfile}
+                  value="显示个人信息"
+                />
+                <br />
+                <h2>
+                  是否展示个人信息: {this.state.showProfile ? "展示" : "不展示"}
+                </h2>
+                <div ref={this.saveShowProfileDiv}>
+                  {console.log(personData)}
+                  <PersonProfile personList={personData} />
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        saveShowProfileDiv = (currentNode) => {
+          this.showProfileDiv = currentNode;
+        };
+
+        saveUserNameInput = (currentNode) => {
+          this.userNameInput = currentNode;
+          this.userNameInput.addEventListener("onblur", this.handleSubmit);
+        };
+
+        handleSubmit = () => {
+          // 从当前实例对象中直接获取userNameInput，而不是从refs属性上获取了
+          const userNameInput = this.userNameInput;
+          alert(userNameInput.value);
+        };
+
+        // 控制个人信息的展示
+        handleChangeShowProfile = () => {
+          const showProfile = this.state.showProfile;
+          const showProfileDivDisplay = showProfile ? "block" : "none";
+          this.setState({ showProfile: !showProfile });
+          this.showProfileDiv.style.display = showProfileDivDisplay;
+        };
+      }
+
+      ReactDOM.render(<MyClassComponet />, document.getElementById("root"));
+    </script>
+  </body>
+</html>

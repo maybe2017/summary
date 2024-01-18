@@ -1,0 +1,44 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+li {
+  list-style: none;
+}
+
+.product {
+  width: 1226px;
+  height: 628px;
+  background-color: #ead4ba;
+  margin: 50px auto;
+}
+
+.left {
+  float: left;
+  width: 234px;
+  height: 628px;
+  background-color: skyblue;
+}
+
+.right {
+  float: right;
+  width: 978px;
+  height: 628px;
+  background-color: brown;
+}
+
+.right li {
+  float: left;
+  margin-right: 14px;
+  margin-bottom: 14px;
+
+  width: 234px;
+  height: 300px;
+  background-color: orange;
+}
+
+/* 父容器宽度不够，子元素(第4个第8个)即使设置浮动也会掉出来，需要对掉出来的元素更改宽度或边距 */
+.right li:nth-child(4n) {
+  margin-right: 0px; 
+}
