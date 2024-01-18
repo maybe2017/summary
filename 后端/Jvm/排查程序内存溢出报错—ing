@@ -1,0 +1,33 @@
+# 排查程序内存溢出报错:  java/lang/OutOfMemoryError': unable to create new native thread
+# 虚拟机在JVM内存创建一个Thread对象同时，会创建一个操作系统线程，而这个系统线程的内存用的不是JVMMemory。
+
+1.#查看当前用户进程资源最大限制(max user processes)
+ulimit –u
+ulimit –a
+
+2.#查看系统现在的线程数命令
+ ps -eLf | wc -l
+
+
+3. 用jstack统计线程数（RUNNABLE，BLOCKING，WAITING）
+链接进程查看所有活动线程详细: jstack -l pid
+统计线程数: jstack -l pid | grep 'java.lang.Thread.State' | wc -l
+按线程的不同状态统计: jstack -l pid | grep 'java.lang.Thread.State: RUNNABLE' | wc -l
+
+4.统计死锁的线程数: jstack -l 22529 | grep 'Java-level deadlock'  | wc -l
+
+
+// 先top看占用率高的进程
+// 再通过top -Hp pid可以查看该进程下各个线程的cpu使用情况
+// 将线程号转为16进制
+printf "%x\n" 22542
+// 使用jstack pid命令查看当前java进程的堆栈状态
+
+// free -h
+// 查看虚拟机jvm java -XX:+PrintFlagsFinal -version | grep ThreadStackSize
+
+
+
+
+jmap -histo 2199699 | head -n 20 查看存活对象前20个
+
