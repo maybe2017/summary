@@ -1,0 +1,36 @@
+1、从宿主机当前目录拷贝至镜像中目标路径
+docker cp neptune-parent-2.3.0-release.jar 80811a1bf1b2:/opt/neptune-parent
+
+docker exec -it 9deb71b34cd1 /bin/bash
+
+docker cp /data/qiyeweixin_history_data/temp/conversationRecord05010515.json 5859a52a3184:/data/tempData
+
+
+
+docker run -itd --name mongo -v /data/mayu/mongo4_4/docker_volume/data:/data/db -v /data/qiyeweixin_history_data/temp:/data/tempData -p 37017:27017 mongo:4.4
+
+
+
+docker run  -itd -e ENVIRONMENT=car-test -e NACOS_ADDR=10.40.7.50:8848 -e NACOS_USER=aifwts -e NACOS_PASS=aifwts1 --net=host  -v /var/log:/var/log --name jupiter-business-1.5.0-aac-rule.release  10.40.7.52:29010/jupiter-business:1.5.0-aac-rule.release
+
+
+docker run --env PREFER_HOST_MODE=hostname --env MODE=standalone --env NACOS_AUTH_ENABLE=true -p 8848:8848 nacos/nacos-server
+
+
+docker镜像仓库地址：怎么保存密码? https://www.jianshu.com/p/73cc97e2f95d
+docker login -u admin -p Harbor#23#tek 10.40.7.52:29010
+docker login 10.40.7.52:29010 -u admin --password-stdin
+
+docker tag标记本地镜像，将其归入某一仓库
+docker tag IMAGE[:TAG] [REGISTRY_HOST[:REGISTRY_PORT]/]REPOSITORY[:TAG]
+docker tag 10.40.7.52:29010/jupiter-business:1.5.0-aac-rule.release 10.40.7.52:29010/aifwts/jupiter-business:1.5.0-aac-rule.release
+
+// 标记本地rule镜像
+docker tag 10.40.7.52:29010/jupiter-rule:1.5.0-aac-rule.release 10.40.7.52:29010/aifwts/jupiter-rule:1.5.0-aac-rule.release
+// 推送
+docker push 10.40.7.52:29010/aifwts/jupiter-rule:1.5.0-aac-rule.release
+
+
+docker tag SOURCE_IMAGE[:TAG] 10.40.7.52:29010/jupiter/REPOSITORY[:TAG]
+docker push 10.40.7.52:29010/aifwts/jupiter-business:1.5.0-aac-rule.release
+
