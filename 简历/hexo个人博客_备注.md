@@ -1,4 +1,29 @@
-### 一、服务器相关
+## hexo博客
+
+### 一、本地安装客户端
+1. 安装客户端：npm install -g hexo-cli
+2. 如果是第一次安装：hexo init hexo_blog
+3. 安装部署插件：npm install hexo-deployer-git --save
+4. 安装主题：
+   ```
+   // 安装并切换
+   1. git submodule add https://github.com/ppoffice/hexo-theme-icarus.git themes/icarus
+   2. npm install -S hexo-theme-icarus hexo-renderer-inferno
+   3. hexo config theme icarus
+
+   // 卸载
+   npm uninstall hexo-theme-icarus
+
+   // clone主题配置到本地 -b指定版本
+   git clone https://github.com/ppoffice/hexo-theme-icarus.git themes/icarus -b 5.2.1
+   git clone git@github.com:ppoffice/hexo-theme-icarus.git themes/icarus
+   ```
+5. 客户端根目录：cd /Users/mayu/work_data/hexo_blog
+6. 创建新博客文章：hexo new "GCC及开发环境的理解"
+7. 打包并发布到远程服务器：hexo c && hexo g && hexo d
+8. 历史命令：history | grep hexo
+
+### 二、服务器相关
 
 1. 服务器上涉及博客的文件或文件夹 均需要非 root 的 mayu 用户权限
 
@@ -22,9 +47,8 @@
    备注：个人在编程学习路上的知识点梳理和记录，方便自己随时
    hexo init hexo_blog
    ```
-### 二、本地操作
+### 三、本地操作
 4. 常用操作命令
-
    ```bash
    ## 根目录
    cd /Users/mayu/work_data/hexo_blog
