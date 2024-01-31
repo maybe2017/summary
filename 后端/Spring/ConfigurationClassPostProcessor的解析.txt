@@ -1,0 +1,35 @@
+
+## refresh()#invokeBeanFactoryPostProcessors()
+### 一
+1. 优先遍历每一个BeanDefinitionRegistryPostProcessor，调用其`postProcessBeanDefinitionRegistry()`，此处为二的入口，即处理配置类的BeanDefinition。
+2. 再遍历每一个BeanFactoryPostProcessor，调用其`postProcessBeanFactory()`
+
+
+### 二、ConfigurationClassPostProcessor的解析[最重要的BFPP、同时它是BDRFPP]【注解相关的解析工作】
+1. 筛选出被注解修饰的BeanDefinition。
+2. 先解析 `被注解修饰的BeanDefinition` 上的注解元数据，放入AnnotatedMetadata对象。
+3. 遍历BeanDefinition，根据其类型的不同，调用不同的parse方法，进行下面的解析，最终目的都是为了获取由注解延申出需要加载的BeanDefinition。
+
+	```
+	// 从每一个被注解修饰的BeanDefinition中的 注解元数据里面进行下面的判断
+	1. 检查是否有@Condition注解，是则计算Conditional.matches()
+	2. 检查父类，有自定义的父类，先递归解析父类BeanDefinition
+	3. 检查是否有@Component注解，注意@Configuration也继承于它；继续会检查是否有内部类，递归解析内部类的注解
+	4. 检查是否有@PropertySource注解，有则加载指定路径下的properties文件到上下文中的propertySourceList中，在后续Bean初始化时会用其赋值
+	5. 检查是否有@ComponentScan注解，有则扫描指定路径包下的class文件，尝试解析到需要被加载的类，继而递归去解析
+	6. 检查是否有@Import注解，因为Import进来的类可能仍被@Import修饰，递归处理
+	7. 检查是否有@Bean注解，
+	
+	```
+	
+	```
+	// ConfigurationClassPostProcessor解析@Import注解时，完成了Springboot中自动装配环节
+	1. 启动类上注解：@EnableAutoConfiguration => @Import(AutoConfigurationImportSelector.class); => @Import(AutoConfigurationImportPackges.Registrar.class)
+	2. 将`导入选择器AutoConfigurationImportSelector.class` 进行实例化，放入 `deferredImportSelectorHandler集合` 中，表示延迟处理。
+	3. 处理时，会调用AutoConfigurationImportSelector类中重要方法 `getCandidateConfigurations()`，
+	4. 利用工具类 `SpringFactoriesLoader.loadFactoryNames()` 将META/INF/spring.factories文件加载进来，取出key为`EnableAutoConfiguration`的values
+	5. 将values中需要的自动配置类留下，不需要的排除
+	```
+	
+4. BeanDefinition类型结构如下：
+ 	
