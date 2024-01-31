@@ -23,6 +23,7 @@ SpringBoot就在此方法中进行了内嵌Tomcat。
    2. getObject创建出来的对象是否属于单例由isSingleton中的返回决定
    3. 如果要获取FactoryBean对象，请在id前面加一个&引用符号来获取(解引用)
    4. 实现FactoryBean接口的Bean由spring管理，在一级缓存中；但是getObject()返回的对象，虽然也是spring管理，但是不是在一级缓存中，而是另一个`factoryBeanObjectCache` 缓存中。
+   5. getObject()返回的对象是否放入`factoryBeanObjectCache`缓存，取决于isSingleton()方法；不是单例对象的话，每次都会创建一个新对象。
    ```
 3. FactoryBean的实现通常被定义为BeanFactory中的SPI实例
 
