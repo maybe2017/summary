@@ -34,3 +34,23 @@ docker push 10.40.7.52:29010/aifwts/jupiter-rule:1.5.0-aac-rule.release
 docker tag SOURCE_IMAGE[:TAG] 10.40.7.52:29010/jupiter/REPOSITORY[:TAG]
 docker push 10.40.7.52:29010/aifwts/jupiter-business:1.5.0-aac-rule.release
 
+
+
+
+
+ 2176  docker login -u admin -p Harbor#23#tek 10.40.7.52:29010
+ 2177  docker images
+ 2178  docker push 10.40.7.52:29010/jupiter-business
+ 2179  docker push 10.40.7.52:29010/jupiter-business:1.5.0-aac-rule.release
+ 2187  docker login -u admin -p Harbor#23#tek 10.40.7.52:29010
+ 2188  docker push 10.40.7.52:29010/jupiter-business:1.5.0-aac-rule.release
+ 2189  docker images
+ 2190  docker push  10.40.7.52:29010/jupiter-business/10.40.7.52:29010/jupiter-business:1.5.0-aac-rule.release
+ 2191  docker save cdc829be2185 > jupiter-business.tar
+ 2193  docker push 10.40.7.52:29010/jupiter/jupiter-business:1.5.0-aac-rule.release
+ 2194  docker push 10.40.7.52:29010/jupiter-business:1.5.0-aac-rule.release
+ 2196  docker images
+ 2197  docker push 10.40.7.52:29010/jupiter-business:1.5.0-aac-rule.release
+ 2198  docker tag 10.40.7.52:29010/jupiter-business:1.5.0-aac-rule.release 110.40.7.52:29010/aifwts/jupiter-business:1.5.0-aac-rule.release
+
+
