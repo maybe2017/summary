@@ -1,10 +1,20 @@
 #### 基本查询
 db.resourceInfo.find({"attr.voiceTime":"{`$gte: new Date(2022,02,01)}","thirdParams":{"$`exists"\:true}, "thirdParams.dataRecordId":{\$eq\:null}}).count();
 
+### 查询时间范围内 管家违规次数大于0次的数据
+db.conversationInfo.find({
+    "startTime": {
+        "$gt": "2024-10-15 00:00:00",
+        "$lt": "2024-10-16 00:00:00"
+    },
+		"mircoDelayReplayCount": {"$gt": 0}
+}).count();
+
 ### 按时间字符串查询
 
 ```
 db.conversationInfo.count({"$and":[{"startTime":{"$gt":"2023-04-01 00:00:00"}},{"startTime":{"$lt":"2023-04-17 00:00:00"}}]});
+
 db.conversationInfo.find({"microManagerId":"13666701435", "customerId":"wm-900BgAAC20n3g8wL7v0GEoa8X-GVw"});
 db.conversationInfo.find({"microManagerId":"15757222645", "customerId":"wm-900BgAAkxdY2L__2w7Wesw7DNrhmw"});
 ```
