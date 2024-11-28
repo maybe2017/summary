@@ -1,5 +1,22 @@
 #### 基本查询
-db.resourceInfo.find({"attr.voiceTime":"{`$gte: new Date(2022,02,01)}","thirdParams":{"$`exists"\:true}, "thirdParams.dataRecordId":{\$eq\:null}}).count();
+##### 时间对象查询[https://blog.csdn.net/Sunxn1991/article/details/102581733]
+db.resourceInfo.find({"attr.voiceTime":"{`$gte: new Date(2024,11,21),"$lte":new Date(2024,11,22)}","thirdParams":{"$`exists"\:true}, "thirdParams.dataRecordId":{\$eq\:null}}).count();
+
+
+##### 查询 1121 - 1122间的数据，注意Date对象的月份是从0开始
+db.resourceInfo.find({"attr.channel":"default","attr.voiceTime":{"$gte": new Date(2024,10,21),"$lte":new Date(2024,10,22)},"attr":{"$exists":true},"third":{"$exists":true},"label":{"$exists":true}}).count();
+
+db.resourceInfo.find({"attr.channel":"default","attr.voiceTime":{"$gte": new Date(2024,10,21),"$lte":new Date(2024,10,22)}}).count();
+
+// 查qualityInspectionInfo 相同时间范围的数据，看看总数能否对应上
+db.qualityInspectionInfo.find({"channel":"default","voiceTime":{"$gte": new Date(2024,10,21),"$lte":new Date(2024,10,22)}}).count();
+
+
+db.resourceInfo.find({"attr.channel":"default","attr.voiceTime":{"$gte":1732118400000,"$lte":1732204799000},"attr":{"$exists":true},"third":{"$exists":true},"label":{"$exists":true}}).count();
+
+
+db.resourceInfo.find({"thirdParams.attr.calledNo":""},{"thirdParams":1}).count();
+db.resourceInfo.find({"thirdParams.attr.calledNo":""},{"thirdParams":1});
 
 ### 查询时间范围内 管家违规次数大于0次的数据
 db.conversationInfo.find({
