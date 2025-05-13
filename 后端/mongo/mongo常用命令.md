@@ -27,6 +27,16 @@ db.conversationInfo.find({
 		"mircoDelayReplayCount": {"$gt": 0}
 }).count();
 
+### 查询亚信推送的消息数
+db.conversationRecord.find({
+    "msgTime": {
+        "$gt": "2025-04-13 00:00:00",
+        "$lt": "2025-04-14 00:00:00"
+    }
+}).count();
+
+db.conversationRecord.find({"conversationId":"","$or" : [{ "microManagerId" : { "$exists" : false } }, { "microManagerId" : null }]}).sort({ msgTime: -1, msgSeq: 1 }).limit(10000).explain();
+
 ### 按时间字符串查询
 
 ```
