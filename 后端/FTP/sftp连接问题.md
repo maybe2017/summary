@@ -7,3 +7,7 @@
 
 ## 421
 考虑连接数超载
+
+### SFTP服务器为ipv6时
+1. 注意ip地址用`[]`包裹
+2. java服务启动脚本中，查看是否有`-Djava.net.preferIPv4Stack=true`，或代码中查询是否有 `System.setProperty("java.net.preferIPv4Stack", "true");`
