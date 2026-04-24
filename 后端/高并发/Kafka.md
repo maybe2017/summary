@@ -3,10 +3,10 @@
 1. RocketMQ中有Topic，Kafka也有Topic
 2. RocketMQ中有MessageQueue，Kafka也有Partition
     ```
-    MessageQueue是逻辑上的队列概念，一一对应了一个ConsumeQueue索引文件（Offset: 0, Size: 130, TagHash: 0x0450D27E）
-    Partition不仅仅逻辑上存在，而且物理上也对应一个文件。
+    MessageQueue是逻辑上的队列概念，一一对应了一个ConsumeQueue索引文件（Offset: 0, Size: 130, TagHash: 0x0450D27E）【它是消息的索引，不是具体的消息数据】
+    Partition不仅仅逻辑上存在，而且物理上也对应一个文件。【它是具体的消息数据，所以kafka 的topic不能太多，会导致Partition文件过多，写入时有磁盘竞争】
     ```
-3. 消费者组，两者都是 `一条消息只被组内一个消费者消费` 的特性；而且 `消费并行度` 都是由队列（Partition）数量决定！！
+3. 对于一个topic下的某一个队列，两者都是 `一条消息只被消费者组内一个消费者消费` 的特性；而且 `消费并行度` 都是由队列（Partition）数量决定！！
     ```
     // 怎么理解消费者组？
     把它理解为单独的一个个下游系统
