@@ -46,6 +46,7 @@
     ```
     FileChannel channel = new RandomAccessFile("test.txt", "rw").getChannel();
     
+    // 每个进程都有自己独立的 虚拟地址空间（32 位 / 64 位地址），访问的是虚拟地址，CPU如果发现：这页还没加载到物理内存 → 缺页异常（Page Fault），操作系统把文件对应页从磁盘读到物理内存（内核页缓存）
     // 通过Channel进行mmap系统调用，映射文件到进程虚拟地址空间
 
     // 返回的这个buffer，虽然是一个Java对象，但是其引用的数据，却是一组虚拟地址空间，实际上是指向内核层pageCache缓存的文件页指针【不属于JVM堆，不受GC管理】
