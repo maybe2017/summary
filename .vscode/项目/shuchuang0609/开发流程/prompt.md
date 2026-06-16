@@ -55,13 +55,15 @@
 
 
 #### 问题
-#### 值班室排班页面
-1. 需要增加一个功能：报省表导出，(你可以恢复之前曾经被移除的"节假日排班导出"的导出功能，在这个功能上来修改。),点击该导出按钮，弹出窗口中，支持导出文件名称填写、支持部门选择、时间选择、角色选择 (驻守主要领导、带班领导、县级值班领导、值班领导、值班员，多选，这里你需要用字典)，导出的内容为选择时间内的排班数据，但是你导出的格式需要是word文件，我给你一个样例，在后端项目路径dyh-lbzbzllzxt-api/jeecg-boot-module-operation/src/main/resources/duty/巴中市及各县区2026年清明节值班表（报省）.doc，如果可以，你可以基于此样例文件，生成一个报省表导出文件模版
+#### 需求：值班室排班页面，报省表导出功能更新
+1. 导出弹出窗口中，角色选择默认全选，目前没有自动勾选'驻守主要领导';
+2. 部门选择多选后，需要支持在结果框内拖拽移动已选择组织部门的顺序，导出excel中的组织部门顺序会按该顺序来。
+3. 你参考新的样例文件，在后端项目路径dyh-lbzbzllzxt-api/jeecg-boot-module-operation/src/main/resources/duty/报省表导出模版样例.xlsx，如果可以，你可以基于此样例文件，生成一个报省表导出文件模版,你后续可以使用，当然你也可以不使用模版；现在最新需求是生成一个excel，而不是之前的word格式了。
     ```
     // 注意点
-    主要看导出时，选择的角色中是否包含有'驻守主要领导'角色，如果有，样例word中，你则需要在对应位置添加'驻守主要领导'角色的数据展示）
-    导出word时，选择的角色，需要与真实的排班数据匹配放入，如果真实排班数据中，没有导出时选择的角色，word中保留选择角色，值为空即可。
-    导出word中的值班电话，从组织机构中读取(部门数据中有值班电话字段)。
+    导出时，选择的角色中是否包含有'驻守主要领导'角色，如果有，导出的excel中，不要忘记添加'驻守主要领导'角色的数据展示；
+    如果真实排班数据中，没有导出时选择的角色，excel中保留该角色，排班数据为空即可。
+    
     ```
 
 #### 排班原始数据导出模板问题
@@ -70,5 +72,25 @@
 2. 如果选择的时间范围超过7天，第二个7天的数据，不要再横着放，相当于放在第一个7天数据的下方，相当于横着最多放置7天的数据，你懂我意思吧？
 
 
+#### 需求：部门为市委市政府值班室的用户点击进入“县区城运排班”和“市级城运排班”菜单页面后，页面默认展示这两个单位对应排班数据，而非其他部门的排班数据
+
+### 注意点
+1. 如果需要的话，你可以连接本机环境的数据库及redis服务，但是仅给你读权限，如果需要写的话，你输出脚本即可。
+    ```
+    // mysql
+    本机是docker启动的一个mysql容器服务，ip地址：127.0.0.1，密码：rootroot
+    # Datasource Configuration
+    spring.sharding-sphere.datasource.names=master
+    spring.sharding-sphere.datasource.master.url=jdbc:mysql://127.0.0.1:3306/zbzs_bz?characterEncoding=UTF-8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true
+    spring.sharding-sphere.datasource.master.username=root
+    spring.sharding-sphere.datasource.master.password=rootroot
+    spring.sharding-sphere.datasource.master.driver-class-name=com.mysql.cj.jdbc.Driver
+    spring.sharding-sphere.datasource.master.type=com.alibaba.druid.pool.DruidDataSource
+    ```
+2. 前后端代码你都帮我改，如果要新生成前端页面的话，风格尽量与已有页面保持一致，组件尽量复用。如果需要执行脚本，你仅输出脚本，我自己来执行。
+3. 如果你实在不能理解需求或者很模糊，你先别动代码，先向我确定。
 
 
+1. 我已经在字典GOV_DUTY_ROOM中添加上了'市委市政府总值班室:A01A02A52'，你用名称'市委市政府值班室'过滤就行，因为编码随环境是可变的，本地环境和线上真实环境不一致。
+2. 进入「市级城运排班」→ 默认展示名称为'市城运中心'的排班数据。
+3. 进入「县区城运排班」→ 默认展示第一个县区子机构的排班数据即可。
