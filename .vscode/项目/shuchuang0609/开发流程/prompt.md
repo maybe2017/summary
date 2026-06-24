@@ -33,3 +33,8 @@
 2. 如果你实在不能理解需求或者很模糊，你先别动代码，先向我确定。
 
 
+
+###
+1. 市级城运排班中，对某一天排班时，对于带班市领导上传照片是必须的吗？
+2. 市级城运排班中，对某一天排班时，上传照片接口没有报错，但是页面却没有渲染出来图片，这是我本地环境，你能帮忙查下是什么问题吗？我看了浏览器http://localhost:8088/dyh/lbzb/oss/file/upload上传接口响应为"{"success":true,"message":"操作成功！","code":0,"result":{"key":"image/jpeg","value":"/oss-zhibanzhishou/cat.jpeg"},"timestamp":1782283432857}"
+
