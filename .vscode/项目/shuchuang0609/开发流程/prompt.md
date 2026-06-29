@@ -68,4 +68,5 @@ curl -X POST 'http://10.1.248.17/v1/chat-messages' \
 
 把 DIFY_CHAT_MESSAGES_URL 与 DEFAULT_INFO_DIFY_API_KEY 这两个变量放在java代码中是不是有点不合适，你能给出建议吗，怎么处理合适呢？放在字典里面吗？现在已有的字典数据中是否有可以配置dify地址的配置呢？
 
-reportInfoId: "2064554747473502210"
+
+
