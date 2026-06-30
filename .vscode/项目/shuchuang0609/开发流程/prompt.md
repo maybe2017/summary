@@ -69,4 +69,86 @@ curl -X POST 'http://10.1.248.17/v1/chat-messages' \
 把 DIFY_CHAT_MESSAGES_URL 与 DEFAULT_INFO_DIFY_API_KEY 这两个变量放在java代码中是不是有点不合适，你能给出建议吗，怎么处理合适呢？放在字典里面吗？现在已有的字典数据中是否有可以配置dify地址的配置呢？
 
 
+### 测试环境
+我前后端打包发布到测试环境后，在值班值守->信息接报->创建值班事件->AI生成事件描述这条链路中，AI生成前端渲染的时候却没有流式渲染的效果，但是本地环境是有的，这可能是什么原因，我要怎么排查？
 
+2069372320476119042
+
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3ODI4NzAwNTgsInVzZXJuYW1lIjoiYWRtaW4ifQ.zvVkSg3kxGMV0ljdMoNKGw13jz-eW1wa3Z8bTbJ5KqI
+
+
+echo "=== B. 同机 HTTPS 10.1.53.77 ==="
+curl -sSNk --no-buffer \
+  -H "X-Access-Token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3ODI4ODI0NjYsInVzZXJuYW1lIjoiYWRtaW4ifQ.v8fID2HP1fSEjw2h1wFuTVMNXbMn40Ice03wmIJRecI" \
+  -H "Accept: text/event-stream" \
+  "https://10.1.53.77:9030/dyh/lbzb/report/reportInfoRecord/aiInfo/eventDescription/stream?id=2069372320476119042" \
+  2>/dev/null | while IFS= read -r line; do
+    echo "$(date +%H:%M:%S.%3N) $line"
+  done | head -30
+
+
+
+# A. 直连后端（绕过 Nginx）—— 判断后端/Dify 是否正常流式
+docker exec -it app-front sh
+cat /etc/nginx/conf.d/default.conf   # 按上面修改
+nginx -t && nginx -s reload
+
+### 正式环境
+正式环境中，值班值守->签收信息，角标存在数值，但是列表行中却没有红色背景填充的行，就是说是角标数量和红色背景数量对不上； 可能是什么问题，我要怎么排查？
+
+
+区县「签收信息」里，角标表示 还有几条没签收；红行却只在 待抄告核实（isVerify=1） 时出现。
+常见业务路径：
+信息下发到区县 → status=0，isVerify=0 → 进角标，不标红
+市级发起抄告核实 → isVerify=1 → 角标仍在，开始标红
+区县签收 → status 变为已签收 → 角标减 1
+所以：角标有数、无红行 = 有未签收项，但还没有待核实项，在当前代码下是「符合实现、不符合直觉」的行为
+
+SELECT
+  SUM(CASE WHEN a.status = '0' THEN 1 ELSE 0 END) AS badge_count,
+  SUM(CASE WHEN a.is_verify = 1 THEN 1 ELSE 0 END) AS red_row_count,
+  SUM(CASE WHEN a.status = '0' AND IFNULL(a.is_verify,0) != 1 THEN 1 ELSE 0 END) AS badge_only_no_red
+FROM town_report_info_dept_rel a
+WHERE a.is_deleted = 0
+  AND a.org_code = 'A01A03A02A06A07A01'
+  AND a.distribute_type IN (1, 2);
+	
+	
+	SELECT
+  a.id,
+  a.report_info_id,
+  a.status,
+  a.is_verify,
+  a.distribute_type,
+  a.create_time,
+  a.update_time
+FROM town_report_info_dept_rel a
+WHERE a.is_deleted = 0
+  AND a.org_code = 'A01A03A02A06A07A01'
+  AND a.status = '0'
+  AND a.distribute_type IN (1, 2)
+  AND IFNULL(a.is_verify, 0) != 1;
+	
+SELECT
+  id,
+  record_type,
+  content,
+  record_content,
+  create_org_code,
+  create_time
+FROM town_report_info_record
+WHERE report_info_id = 2053291023123165186
+  AND is_deleted = 0
+ORDER BY create_time DESC;
+（值班值守->签收信息链路中，签收信息未读角标数与列表未核实数量不一致问题）
+
+
+#### 角标数与红色背景行呈现逻辑
+1. 区县「签收信息」里，角标 = 未签收，红行 = 待核实；
+2. 区县「签收信息」列表中，需要点击信息详情，才会同时把 消息状态改为 "已签收"、"已核实"。
+3. 上报信息模块中点详情 → 只核实、不签收 【这里导致了问题】
+
+#### 复现问题步骤
+1. 龙泉驿区龙泉街道值班室上报信息，上报给龙泉驿区值班室，区值班室对该条信息进行抄告核实，并指定核实部门为龙泉街道值班室；
+2. 街道值班室在上报信息模块下的列表中，点击刚才上报的消息并进入详情。（这里仅会将消息状态改为"已核实"，不会改签收状态）
+   => 导致出现问题：在「签收信息」列表中，不再出现红色背景行，但是角标数还在。
