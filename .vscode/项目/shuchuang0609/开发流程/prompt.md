@@ -87,6 +87,39 @@ curl -sSNk --no-buffer \
   done | head -30
 
 
+# 走https =》不正常的流式返回，内容集中在1s左右
+curl -sSNk --no-buffer \
+  -H "Accept: text/event-stream" \
+  "https://10.1.53.77:9030/dyh/lbzb/report/reportInfoRecord/aiInfo/eventDescription/stream?id=2071883071203917825" \
+| while IFS= read -r line; do
+    echo "$(date +%H:%M:%S) $line"
+  done
+
+# 跳过https =》正常的流式返回
+curl -sSN --no-buffer \
+  -H "Accept: text/event-stream" \
+  "http://10.1.53.77:8080/dyh/lbzb/report/reportInfoRecord/aiInfo/eventDescription/stream?id=2071883071203917825" \
+| while IFS= read -r line; do echo "$(date +%H:%M:%S.%3N) $line"; done
+
+
+### 从发起请求到第一条 data: 等了多久：【若 TTFB_SEC ≈ 3 秒，而后面 0.33 秒收完 → 等整段 + 瞬间下发，就是网关缓冲】
+
+start=$(date +%s.%3N)
+curl -sSNk --no-buffer \
+  -H "Accept: text/event-stream" \
+  "https://10.1.53.77:9030/dyh/lbzb/report/reportInfoRecord/aiInfo/eventDescription/stream?id=2071883071203917825" \
+| while IFS= read -r line; do
+    now=$(date +%s.%3N)
+    case "$line" in
+      data:*)
+        echo "TTFB_SEC=$(echo "$now - $start" | bc) FIRST=$now"
+        echo "$line"
+        break
+        ;;
+    esac
+  done
+
+
 
 # A. 直连后端（绕过 Nginx）—— 判断后端/Dify 是否正常流式
 docker exec -it app-front sh
