@@ -185,3 +185,33 @@ ORDER BY create_time DESC;
 1. 龙泉驿区龙泉街道值班室上报信息，上报给龙泉驿区值班室，区值班室对该条信息进行抄告核实，并指定核实部门为龙泉街道值班室；
 2. 街道值班室在上报信息模块下的列表中，点击刚才上报的消息并进入详情。（这里仅会将消息状态改为"已核实"，不会改签收状态）
    => 导致出现问题：在「签收信息」列表中，不再出现红色背景行，但是角标数还在。
+
+#### 问题链路
+1. 龙泉驿区龙泉街道值班室上报信息，上报给龙泉驿区值班室，区值班室对该条信息进行抄告核实，并指定核实部门为龙泉街道值班室；
+2. 街道值班室在上报信息模块下的列表中，点击刚才上报的消息并进入详情。（这里仅会将消息状态改为"已核实"，不会改签收状态）
+   => 导致出现问题：在「签收信息」列表中，不再出现红色背景行，但是角标数还在。
+#### 
+我考虑这样改，用户在上报信息模块下的列表中点击进入详情，将消息状态改为"已核实"的时候，查一下是否在签收信息也存在（这里是不是用消息id关联？），如果存在，就把对应的签收信息状态改为已签收，这样就可以保持数据一致了。你先梳理下逻辑，看看这样改是否有问题，会影响其他链路吗？ 
+
+为保留字段与字段值的映射关系，我把sql语句的查询结果在navicat中复制为了insert语句，希望你能理解。
+第一条sql的查询结果：
+INSERT INTO `zbzs`.`report_dept` (`id`, `org_code`, `event_info_id`, `create_time`) VALUES (2059424378478735361, 'A01A01A02', 2059456563860606976, '2026-05-27 08:00:09');
+
+第二条sql的查询结果：
+INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`, `create_by`, `create_time`) VALUES (2059822501902495745, '2', 'A01A03A02A09', '1539799646900142082', '2026-05-28 10:22:09');
+INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`, `create_by`, `create_time`) VALUES (2059604210919485441, '2', 'A01A03A02A09', '1539799646900142082', '2026-05-27 19:54:44');
+INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`, `create_by`, `create_time`) VALUES (2059556260914737153, '2', 'A01A06A02A13', '1537450414184677377', '2026-05-27 16:44:12');
+INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`, `create_by`, `create_time`) VALUES (2059522309298925569, '2', 'A01A03A02A09', '1539799646900142082', '2026-05-27 14:29:17');
+INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`, `create_by`, `create_time`) VALUES (2059502062500130818, '2', 'A01A03A02A09', '1539799646900142082', '2026-05-27 13:08:50');
+INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`, `create_by`, `create_time`) VALUES (2059485504063221761, '2', 'A01A03A02A09', '1539799646900142082', '2026-05-27 12:03:02');
+INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`, `create_by`, `create_time`) VALUES (2059458865157713922, '2', 'A01A06A02A23', '1539147378328682498', '2026-05-27 10:17:11');
+INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`, `create_by`, `create_time`) VALUES (2059453452890746881, '2', 'A01A06A02A20', '1537628077083934722', '2026-05-27 09:55:41');
+INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`, `create_by`, `create_time`) VALUES (2059451486261293058, '2', 'A01A03A02A09', '1539799646900142082', '2026-05-27 09:47:52');
+INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`, `create_by`, `create_time`) VALUES (2059446732978204673, '2', 'A01A06A02A23', '1539147378328682498', '2026-05-27 09:28:58');
+INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`, `create_by`, `create_time`) VALUES (2059434563519721474, '2', 'A01A06A02A14', '1537450668443385858', '2026-05-27 08:40:37');
+INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`, `create_by`, `create_time`) VALUES (2059429381075447810, '2', 'A01A03A02A09', '1539799646900142082', '2026-05-27 08:20:01');
+INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`, `create_by`, `create_time`) VALUES (2059426852539281410, '2', 'A01A02A02', '1537651666596216834', '2026-05-27 08:09:59');
+
+第三条sql的查询结果：
+INSERT INTO `` (`bad_cnt`) VALUES (84);
+
