@@ -215,3 +215,134 @@ INSERT INTO `zbzs`.`report_info_record` (`id`, `record_type`, `create_org_code`,
 第三条sql的查询结果：
 INSERT INTO `` (`bad_cnt`) VALUES (84);
 
+
+1. 测试环境前后端是docker部署的：
+  ```
+  CONTAINER ID   IMAGE                                             COMMAND                  CREATED         STATUS                  PORTS                                       NAMES
+  00f6db417933   docker.aiaudit.com.cn/dyh/dyh-lbzb-front:v2.3.4   "/docker-entrypoint.…"   2 seconds ago   Up Less than a second   0.0.0.0:9030->80/tcp, :::9030->80/tcp       app-front
+  624434570c80   docker.aiaudit.com.cn/dyh/dyh-lbzb-api:v2.4.0     "/usr/local/bin/dock…"   3 minutes ago   Up 3 minutes            0.0.0.0:9080->8080/tcp, :::9080->8080/tcp   app-backend
+  e5e0b554b645   redis:5.0.5-alpine                                "docker-entrypoint.s…"   9 months ago    Up 8 months             6379/tcp                                    app_redis_1
+  ```
+2. 这是测试环境前端镜像中的nginx配置文件：
+  ```
+  server {
+    listen       80;
+    server_name  localhost;
+    absolute_redirect off;
+    client_max_body_size 500m;
+    # 1. 单独处理 favicon.ico 请求
+    location = /favicon.ico {
+        access_log off;          # 禁止记录访问日志
+        log_not_found off;       # 禁止记录404错误
+        expires 365d;            # 设置长期缓存
+        add_header Cache-Control "public, immutable";
+        try_files $uri $uri/ =404; # 重要：避免重定向到index.html
+    }	
+    # 优先处理静态资源请求
+    location ~* \.(ico|css|js|gif|jpeg|jpg|png|svg|woff|woff2|ttf|eot)$ {
+        access_log off;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000";
+              root   /usr/share/nginx/html;
+        try_files $uri =404;  # 重要！不要重定向到index.html
+    }
+    # 前端路由处理（Vue/React等SPA应用）
+    location / {
+        root   /usr/share/nginx/html; # 容器内前端文件路径
+        index  index.html index.htm;
+        try_files $uri $uri/ /index.html;
+        # 安全头部设置
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+    }
+    # 错误日志设置（调试时开启）
+    error_log /var/log/nginx/error.log;
+    #文件传输
+    location ^~/oss-zhibanzhishou {
+        #proxy_pass http://oss-zhibanzhishou.oss-cn-cd-cdszwy-d01-a.ops.intra.cdcloud.com/;
+        #proxy_pass http://oss-cn-chengdu-cdxcy-d01-a.res.intra.xc-cdcloud.com/
+          proxy_pass http://oss-zhibanzhishou.oss-cn-chengdu-cdxcy-d01-a.res.intra.xc-cdcloud.com/;
+        #proxy_pass http://10.1.53.77:9030;
+      }
+    # 下载文件处理
+    location /download {
+        # 在这个目录下载，指向容器内挂载点
+        root /etc/nginx/download;
+        #root /etc/nginx/;
+        # 文件名处理逻辑
+        if ( $args ~ ^filename=(.*) ) {
+                add_header  Content-Disposition "attachment; filename=$1";
+        }
+    }
+    # API代理配置（统一使用容器服务名）
+    location /dyh/zbzs/api {
+            proxy_set_header X-real-ip $remote_addr;
+            proxy_set_header Host   $http_host;
+      proxy_pass http://backend:8080/dyh/lbzb/api/;
+          # proxy_set_header X-Access-Token $X-Access-Token;
+          # proxy_pass http://xbackend/dyh/lbzb/api/;
+          #error_page 405 =200 http://backend:8080;
+      }
+    location /trust {
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header X-real-ip $remote_addr;
+        proxy_set_header Host   $http_host;
+        proxy_pass https://172.61.133.109:443/;
+        proxy_redirect off;
+    }
+    location ^~/mappower {
+          proxy_pass http://10.1.213.196/;
+    }
+    # WebSocket
+    location /dyh/lbzb/websocket/ {
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_read_timeout 3600s;
+        proxy_pass http://backend:8080/dyh/lbzb/websocket/;
+    }
+    # SSE 流式
+    location ~ ^/dyh/lbzb/.+/stream$ {
+        proxy_http_version 1.1;
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 600s;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Connection '';
+        proxy_pass http://backend:8080;
+    }
+    # 普通 API（原来的 /dyh/lbzb 默认配置）
+    location /dyh/lbzb {
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://backend:8080/dyh/lbzb;
+        proxy_redirect off;
+    }
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html; # 使用容器标准路径
+        internal;                   # 关键优化：禁止直接访问
+    }
+  }
+  ```
+
+
+
+#### bug
+区县值班室登陆，本级调度->接报信息，在列表中，如果对于红色背景的行，直接点击右侧抄告核实按钮或领导批示传达按钮，会出现：接报信息未读角标数消失，但是行的红色背景仍未消失；但是如果点击详情按钮，角标和背景行都是能正常消失的。查下原因并修复，我怀疑是没刷新的问题？？
+
+###
+针对区县总值班室层级，本级调度 → 接报信息 -> 点击详情-> 点击编报值班信息按钮-> 编报值班信息弹窗，需要实现在编报值班信息弹窗中，右下角'AI生成'按钮的显示与否用字典去控制，字典 TOWN_AI_AGENT_CONFIG 里面配置的区县部门可以看到这个按钮，否则就不能看到。
+
+开发环境AI生成接口报错？？？
+
+### 
+当镇街层级对信息进行续报，区县值班时收到了通知，接报信息未读角标也出现了，但是背景音乐是突然停止了，并没有切换到whwdzg.ogg的播放状态。排查下原因呢
+
+###
+市级值班室登陆，在值班值守->信息接报中，出现：未读角标数是2，列表中也有两条红色背景行，但是当选择一条红色背景行点击“抄告核实”或“详情”按钮后，未读角标整体消失；但是这个业务操作表示我仅读了一条消息啊，未读角标数应该变为1才对，而不是消失。排查下
