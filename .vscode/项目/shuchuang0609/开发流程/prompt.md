@@ -346,3 +346,73 @@ INSERT INTO `` (`bad_cnt`) VALUES (84);
 
 ###
 市级值班室登陆，在值班值守->信息接报中，出现：未读角标数是2，列表中也有两条红色背景行，但是当选择一条红色背景行点击“抄告核实”或“详情”按钮后，未读角标整体消失；但是这个业务操作表示我仅读了一条消息啊，未读角标数应该变为1才对，而不是消失。排查下
+
+
+### 需要验证【结论：t1 之后的市级续报，镇街看不到】
+市级单位创建信息(t0)，汇报给市政府总值班室，总值班室抄告给 区县值班室，区县值班室在抄告给镇街单位(t1), 镇街单位在签收信息详情时间轴中，目前能看到t0到t1之间的数据，如果在t1之后，市级单位又对信息进行了续报，想知道此时镇街单位是否能看到市级单位续报的内容呢？
+
+### TODO
+在值班模块->排班管理中，当前如果是市级值班室登陆，排班管理页面右侧会出现"排班管理编辑权限开关"，帮我梳理下这个开关的作用是什么？
+我需要支持区县总值班室开放关闭辖区内“排班管理”权限，防止基层单位当日值班员随意修改
+
+为保留字段与字段值的映射关系，我把sql语句的查询结果在navicat中复制为了insert语句。
+INSERT INTO `` (`name`, `url`, `component`) VALUES ('排班管理', '/duty/DutyManagement', 'modules/duty/DutyManagement/DutyManagementCard');
+INSERT INTO `` (`name`, `url`, `component`) VALUES ('排班管理', '/duty/township', 'modules/duty/DutyManagement/shiftScheduling');
+
+为保留字段与字段值的映射关系，我把sql语句的查询结果在navicat中复制为了insert语句。
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('管理员', '排班管理', '/duty/DutyManagement', 'modules/duty/DutyManagement/DutyManagementCard');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('区总值班室工作人员', '排班管理', '/duty/DutyManagement', 'modules/duty/DutyManagement/DutyManagementCard');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('市委总值班室领导', '排班管理', '/duty/DutyManagement', 'modules/duty/DutyManagement/DutyManagementCard');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('市政府总值班室领导', '排班管理', '/duty/DutyManagement', 'modules/duty/DutyManagement/DutyManagementCard');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('市委总值班室工作人员', '排班管理', '/duty/DutyManagement', 'modules/duty/DutyManagement/DutyManagementCard');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('市政府总值班室值班干部', '排班管理', '/duty/DutyManagement', 'modules/duty/DutyManagement/DutyManagementCard');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('市政府总值班室工作人员', '排班管理', '/duty/DutyManagement', 'modules/duty/DutyManagement/DutyManagementCard');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('市委总值班室带班干部', '排班管理', '/duty/DutyManagement', 'modules/duty/DutyManagement/DutyManagementCard');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('市各委办局', '排班管理', '/duty/DutyManagement', 'modules/duty/DutyManagement/DutyManagementCard');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('管理员2', '排班管理', '/duty/DutyManagement', 'modules/duty/DutyManagement/DutyManagementCard');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('市属国企', '排班管理', '/duty/DutyManagement', 'modules/duty/DutyManagement/DutyManagementCard');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('市政府办公厅处室角色', '排班管理', '/duty/DutyManagement', 'modules/duty/DutyManagement/DutyManagementCard');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('区级国企总值班室工作人员', '排班管理', '/duty/township', 'modules/duty/DutyManagement/shiftScheduling');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('街道总值班室工作人员', '排班管理', '/duty/township', 'modules/duty/DutyManagement/shiftScheduling');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('区级部门总值班室工作人员', '排班管理', '/duty/township', 'modules/duty/DutyManagement/shiftScheduling');
+INSERT INTO `` (`role_name`, `name`, `url`, `component`) VALUES ('试点区县角色', '排班管理', '/duty/township', 'modules/duty/DutyManagement/shiftScheduling');
+
+第1条sql的查询结果：
+INSERT INTO `` (`item_text`, `item_value`, `description`) VALUES ('市委总值班室', 'A01A02A01', '');
+INSERT INTO `` (`item_text`, `item_value`, `description`) VALUES ('市政府总值班室', 'A01A01A02', '');
+第2条sql的查询结果：
+INSERT INTO `` (`item_text`, `item_value`) VALUES ('权限', '1');
+
+
+那么我现在想要在区县值班室实现一样的功能：区县总值班室右侧也拥有一个开关，它可以管控器其辖区内“排班管理”的编辑权限，防止其管控下的基层单位随意修改。
+
+1. 你把之前我发你的SQL执行结果（这是正式环境里面SQL的查询结果），如果你觉得有用你可以记录一下，
+2. 这个字典GOV_DUTY_ROOM具体有什么用呢，如果不进行配置，有什么影响？
+3. 判定区县总值班室的条件中，“orgCode 以 A01A03 开头”这里是不是比较不合适，因为正式环境，可能和测试环境，及我本地的环境不一致呢？
+  
+
+
+### TODO
+电脑端对于市上总值班室、区县总值班室终端，在详情时间轴上将【抄告核实】动作未阅读的所辖单位以“字体颜色”区分强化提示。已读单位为绿色字体，未读单位为红色字体。
+
+### TODO
+时间轴事发定位旁边增加【转发定位到成都】按钮，点击之后做如下操作：
+1、在当前时间轴上增加一条操作记录：已向成都转发事发定位，记录操作时间/操作单位等基本信息。
+2、将该按钮置灰禁用，按钮文本改为【已转发定位到成都】。
+3、在对应的信息接报页面/跟踪事件/上报事件的时间轴上展示，同样的一条时间轴操作记录。
+
+
+### TODO 区县值班室，覆盖描述字段
+市总值班室 创建事件的标题，去覆盖，炒高的其他单位中，
+
+### 
+区县值班室，本级调度->接报信息，详情中的时间轴中，信息续报背景色改为浅蓝色#1890FF
+
+### 同一部门一次签收可计入多轮抄告核实，但基准时间分别是各轮的操作时间（核实1 用 T1，核实2 用 T3）。正在修复签收与回复两处的计算逻辑。
+对于对于抄告核实1，部门B的时长，应该用T5-T1；而且对于抄告核实2，部门B的时长，就应该用T5-T3，你懂我意思吧，两个时间计算逻辑都要修复哈
+T1  抄告核实1 → 部门A、B
+T2  部门A 签收
+T3  抄告核实2 → 部门A、B、C
+T4  部门C 签收 
+T5  部门B 签收
+T6  部门A 签收
