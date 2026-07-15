@@ -1,0 +1,12 @@
+Hillstone Secure Connect
+VPN安装包下载：
+https://www.hillstonenet.com.cn/support-and-training/hillstone-secure-connect/
+VPN地址：221.237.110.255:45129
+VPN账号：jxyhzx
+VPN密码：%TGB4rfv#EDCsdfe               %TGB4rfv#EDCsdfe<>!@#$
+
+
+
+堡垒机地址：https://172.43.42.18/index.php/login
+堡垒机账号：jxyhzx-user-zb
+堡垒机密码：ZBZS!@#qazwsx1023     19950404mmMM@

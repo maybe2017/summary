@@ -1,0 +1,43 @@
+Hillstone Secure Connect
+VPN安装包下载：
+https://www.hillstonenet.com.cn/support-and-training/hillstone-secure-connect/
+VPN地址：221.237.110.255:45129
+VPN账号：jxyhzx
+VPN密码：%TGB4rfv#EDCsdfe   %TGB4rfv#EDCsdfe<>!@#$
+
+堡垒机地址：https://172.43.42.18/index.php/login
+堡垒机账号：jxyhzx-user-zb
+堡垒机密码：ZBZS!@#qazwsx1023     19950404mmMM@
+
+OB链接信息：
+数据库IP：192.168.6.61
+数据库帐号：root@jxw_gywhfzx_cdjxcyzbzsxt_db#ob_sugon_cluster03
+数据库密码：aXi|Ml/4tIN#=C47ykeR(
+数据库密码：aXi|Ml/4tIN#=C47ykeR(
+
+前端代码部署
+1、先通过远程工具将dist.zip 上传到/root，然后执行如下命令
+cd /opt/nginx-1.24.0/html
+
+rm -rf ./dist.zip ./zbzs/*
+
+mv /root/dist.zip  ./
+
+unzip dist.zip
+
+mv ./dist/*   ./zbzs/ 
+
+后端代码部署
+1、先通过远程工具将jeecg-boot-module-system-2.1.1.jar 上传到/root，然后执行如下命令
+cd /root/dabao
+删除原来的包
+rm -rf ./jeecg-boot-module-system-2.1.1.jar
+mv /root/jeecg-boot-module-system-2.1.1.jar  ./
+sh docker-build.sh  最新的版本号    然后回车
+
+2、代码部署台帐：
+#小程序://腾讯文档/1xImafZODasHu0D
+将上面的复到微信打开就可以了。
+
+3、远程工具安装包
+MobaXterm_Installer_v23.3.zip
