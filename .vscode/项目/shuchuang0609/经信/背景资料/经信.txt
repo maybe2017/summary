@@ -41,3 +41,4 @@ sh docker-build.sh  最新的版本号    然后回车
 
 3、远程工具安装包
 MobaXterm_Installer_v23.3.zip
+4. 数据库智能使用DBever
